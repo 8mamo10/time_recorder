@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <title>Time Recorder</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+
+    //label { display: block; margin-bottom: 5px; }
+    input[type="text"],
+    input[type="radio"] {
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Time Recorder</h1>
+  <form id="attendanceForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br>
+
+    <label>Attendance:</label>
+    <label for="in">IN</label>
+    <input type="radio" id="in" name="inOut" value="IN" required>
+    <label for="out">OUT</label>
+    <input type="radio" id="out" name="inOut" value="OUT"><br>
+
+    <input type="hidden" id="latitude" name="latitude">
+    <input type="hidden" id="longitude" name="longitude">
+
+    <button type="submit">Submit</button>
+  </form>
+  <div id="message"></div>
+
+  <script>
+    const form = document.getElementById('attendanceForm');
+    const messageDiv = document.getElementById('message');
+    const latitudeInput = document.getElementById('latitude');
+    const longitudeInput = document.getElementById('longitude');
+
+    // 位置情報を取得する関数
+    function getLocation() {
+      return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              latitudeInput.value = position.coords.latitude;
+              longitudeInput.value = position.coords.longitude;
+              resolve();
+            },
+            (error) => {
+              console.error("Failed to fetch the location:", error);
+              messageDiv.textContent = 'Failed to fetch the location.';
+              reject(error);
+            },
+            {
+              enableHighAccuracy: true, // 高精度な位置情報を要求
+              timeout: 5000,           // タイムアウト時間
+              maximumAge: 0            // キャッシュを利用しない
+            }
+          );
+        } else {
+          messageDiv.textContent = 'Geolocation not supported.';
+          reject(new Error("Geolocation not supported"));
+        }
+      });
+    }
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault(); // デフォルトのフォーム送信を防止
+
+      messageDiv.textContent = 'Fetching the location...';
+      try {
+        await getLocation(); // 位置情報を取得
+
+        // フォームデータをFormDataオブジェクトに変換
+        const formData = new FormData(form);
+        const params = new URLSearchParams();
+        for (const pair of formData) {
+          params.append(pair[0], pair[1]);
+        }
+
+        messageDiv.textContent = 'Registering...';
+
+        // GASのデプロイURLにPOSTリクエストを送信
+        // ※デプロイ後に取得するURLをここに設定します
+        const YOUR_DEPLOYED_WEB_APP_URL = 'YOUR_APP_URL';
+
+        const response = await fetch(YOUR_DEPLOYED_WEB_APP_URL, {
+          method: 'POST',
+          body: params,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        });
+
+        const data = await response.json();
+        if (data.status === 'success') {
+          messageDiv.textContent = data.message;
+          form.reset(); // フォームをリセット
+        } else {
+          messageDiv.textContent = 'Error: ' + data.message;
+        }
+      } catch (error) {
+        console.error('An error occurred during the registration process:', error);
+        messageDiv.textContent = 'An error occurred during the registration process.';
+      }
+    });
+  </script>
+</body>
+
+</html>
