@@ -21,12 +21,42 @@ function doPost(e) {
 
   // タイムスタンプを追加
   const timestamp = new Date();
+  let address = 'Fetching address...';
+
+  try {
+    // 緯度経度から住所を取得する関数を呼び出し
+    address = getAddressFromCoordinates(latitude, longitude);
+  } catch (err) {
+    console.error("Failed to fetch address:", err);
+    address = 'Failed to fetch address';
+  }
 
   // 新しい行としてデータを追加
-  sheet.appendRow([timestamp, name, inOut, latitude, longitude]);
+  sheet.appendRow([timestamp, name, inOut, latitude, longitude, address]);
 
   return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'Finish registration' }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getAddressFromCoordinates(lat, lng) {
+  // スクリプトプロパティからAPIキーを取得する場合:
+  const apiKey = PropertiesService.getScriptProperties().getProperty('Maps_API_KEY');
+  if (!apiKey) {
+    throw new Error("Google Maps API Key is not set in Script Properties.");
+  }
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}&language=ja`;
+
+  const response = UrlFetchApp.fetch(url);
+  const json = JSON.parse(response.getContentText());
+
+  if (json.status === 'OK' && json.results.length > 0) {
+    // 最も正確な結果 (通常は results[0]) の formatted_address を返す
+    return json.results[0].formatted_address;
+  } else if (json.status === 'ZERO_RESULTS') {
+    return 'Not found';
+  } else {
+    throw new Error(`Geocoding API Error: ${json.status} - ${json.error_message || ''}`);
+  }
 }
 
 // ウェブアプリケーションとしてデプロイするための関数 (初回のみ実行)
