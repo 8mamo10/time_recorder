@@ -64,8 +64,8 @@ function doGet(e) {
   // この関数はGETリクエストがあった場合に実行されます
   // 通常はここでHTMLファイルを提供します
   return HtmlService.createTemplateFromFile('Index')
-      .evaluate()
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL); // <iframe>で埋め込む場合などに必要
+    .evaluate()
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL); // <iframe>で埋め込む場合などに必要
 }
 
 // HTMLファイルの内容を返す関数
