@@ -1,10 +1,16 @@
-// スプレッドシートのIDをここに設定
-const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'; // 例: 1abcdefg_your_spreadsheet_id
-
-// シート名を指定
-const SHEET_NAME = 'Record'; // データ追加先のシート名
-
 function doPost(e) {
+  // スプレッドシートのIDをここに設定
+  const spreadSheetId = PropertiesService.getScriptProperties().getProperty('SpreadSheet_ID');
+  if (!spreadSheetId) {
+    throw new Error("Spreadsheet ID is not set in Script Properties.");
+  }
+
+  // シート名を指定
+  const sheetName = PropertiesService.getScriptProperties().getProperty('Sheet_Name');
+  if (!sheetName) {
+    throw new Error("Sheet Name is not set in Script Properties.");
+  }
+
   // POSTリクエストで送られてきたデータを取得
   const name = e.parameter.name;
   const inOut = e.parameter.inOut;
@@ -16,8 +22,8 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  const ss = SpreadsheetApp.openById(spreadSheetId);
+  const sheet = ss.getSheetByName(sheetName);
 
   // タイムスタンプを追加
   const timestamp = new Date();
