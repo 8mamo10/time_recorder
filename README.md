@@ -88,7 +88,7 @@ This project is a web application that automatically records employee attendance
 - Add new employee names to column A of the Members sheet (starting from A2, A1 is for header)
 - Names will automatically appear in the dropdown when the page loads
 - Duplicate names are automatically removed
-- Names are sorted alphabetically in the dropdown
+- Names appear in the dropdown in the same order as written in the sheet
 
 ## Troubleshooting
 

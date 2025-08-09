@@ -99,13 +99,12 @@ function getMembersList() {
   const range = membersSheet.getRange('A2:A');
   const values = range.getValues();
 
-  // 空白セルを除外し、重複を削除してソート
+  // 空白セルを除外し、重複を削除（シートの順序を維持）
   const members = values
     .map(row => row[0])
     .filter(name => name && name.toString().trim() !== '')
     .map(name => name.toString().trim())
-    .filter((name, index, arr) => arr.indexOf(name) === index) // 重複削除
-    .sort();
+    .filter((name, index, arr) => arr.indexOf(name) === index); // 重複削除
 
   return members;
 }
