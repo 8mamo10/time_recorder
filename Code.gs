@@ -95,8 +95,8 @@ function getMembersList() {
     throw new Error(`Members sheet "${membersSheetName}" not found. Please create a sheet named "${membersSheetName}" with names in column A.`);
   }
 
-  // 名前が入っている列（A列）からデータを取得
-  const range = membersSheet.getRange('A:A');
+  // 名前が入っている列（A列）からデータを取得（2行目から開始）
+  const range = membersSheet.getRange('A2:A');
   const values = range.getValues();
 
   // 空白セルを除外し、重複を削除してソート

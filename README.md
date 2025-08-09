@@ -16,7 +16,7 @@ This project is a web application that automatically records employee attendance
 3. Create two sheets:
    - **Attendance Records Sheet**: For storing attendance data (e.g., "Attendance Records")
    - **Members Sheet**: For managing user names (e.g., "Members")
-4. In the Members sheet, add employee names in column A (one name per row)
+4. In the Members sheet, add a header in A1 (e.g., "Name") and employee names in column A starting from A2 (one name per row)
 
 #### Google Maps API Key
 1. Access [Google Cloud Console](https://console.cloud.google.com/)
@@ -85,7 +85,7 @@ This project is a web application that automatically records employee attendance
 5. Location capture and registration will be processed automatically
 
 **Managing Members:**
-- Add new employee names to column A of the Members sheet
+- Add new employee names to column A of the Members sheet (starting from A2, A1 is for header)
 - Names will automatically appear in the dropdown when the page loads
 - Duplicate names are automatically removed
 - Names are sorted alphabetically in the dropdown
