@@ -16,8 +16,10 @@ function doPost(e) {
   const inOut = e.parameter.inOut;
   const latitude = e.parameter.latitude;
   const longitude = e.parameter.longitude;
+  const store = e.parameter.store || '';
+  const branch = e.parameter.branch || '';
 
-  if (!name || !inOut || !latitude || !longitude) {
+  if (!name || !inOut || !latitude || !longitude || !store || !branch) {
     return ContentService.createTextOutput(JSON.stringify({ status: 'error', message: 'Missing parameters' }))
       .setMimeType(ContentService.MimeType.JSON);
   }
@@ -38,7 +40,7 @@ function doPost(e) {
   }
 
   // 新しい行としてデータを追加
-  sheet.appendRow([timestamp, name, inOut, latitude, longitude, address]);
+  sheet.appendRow([timestamp, name, inOut, store, branch, latitude, longitude, address]);
 
   return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'Finish registration' }))
     .setMimeType(ContentService.MimeType.JSON);
@@ -107,4 +109,52 @@ function getMembersList() {
     .filter((name, index, arr) => arr.indexOf(name) === index); // 重複削除
 
   return members;
+}
+
+// ストアリストを取得する関数
+function getStoresList() {
+  const spreadSheetId = PropertiesService.getScriptProperties().getProperty('SpreadSheet_ID');
+  if (!spreadSheetId) {
+    throw new Error("Spreadsheet ID is not set in Script Properties.");
+  }
+
+  const storesSheetName = PropertiesService.getScriptProperties().getProperty('Stores_Sheet_Name') || 'Stores';
+
+  const ss = SpreadsheetApp.openById(spreadSheetId);
+  const storesSheet = ss.getSheetByName(storesSheetName);
+
+  if (!storesSheet) {
+    throw new Error(`Stores sheet "${storesSheetName}" not found.`);
+  }
+
+  // ストア名と拠点名を取得（2行目から開始）
+  const range = storesSheet.getRange('A2:B');
+  const values = range.getValues();
+
+  // 空白行を除外してデータを整理
+  const storesData = values
+    .filter(row => row[0] && row[0].toString().trim() !== '')
+    .map(row => ({
+      store: row[0].toString().trim(),
+      branch: row[1] ? row[1].toString().trim() : ''
+    }));
+
+  // ストア名一覧を取得（重複削除、順序維持）
+  const stores = [];
+  const storeMap = new Map();
+
+  storesData.forEach(item => {
+    if (!storeMap.has(item.store)) {
+      stores.push(item.store);
+      storeMap.set(item.store, []);
+    }
+    if (item.branch) {
+      storeMap.get(item.store).push(item.branch);
+    }
+  });
+
+  return {
+    stores: stores,
+    storeMap: Object.fromEntries(storeMap)
+  };
 }

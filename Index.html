@@ -128,6 +128,16 @@
         <label for="out">OUT</label>
       </div>
 
+      <label for="store">Store:</label>
+      <select id="store" name="store" required>
+        <option value="">Loading stores...</option>
+      </select><br>
+
+      <label for="branch">Branch:</label>
+      <select id="branch" name="branch" required>
+        <option value="">Select store first</option>
+      </select><br>
+
       <input type="hidden" id="latitude" name="latitude">
       <input type="hidden" id="longitude" name="longitude">
 
@@ -143,6 +153,9 @@
     const longitudeInput = document.getElementById('longitude');
     const submitButton = document.getElementById('submitButton');
     const nameSelect = document.getElementById('name');
+    const storeSelect = document.getElementById('store');
+    const branchSelect = document.getElementById('branch');
+    let storesData = {};
 
     // Function to load names from server
     function loadNames() {
@@ -170,8 +183,63 @@
         .getMembersList();
     }
 
-    // Load names when page loads
-    window.addEventListener('load', loadNames);
+    // Function to load stores from server
+    function loadStores() {
+      google.script.run
+        .withSuccessHandler(function(data) {
+          storesData = data;
+          storeSelect.innerHTML = '';
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Select store';
+          storeSelect.appendChild(defaultOption);
+          
+          data.stores.forEach(function(store) {
+            const option = document.createElement('option');
+            option.value = store;
+            option.textContent = store;
+            storeSelect.appendChild(option);
+          });
+        })
+        .withFailureHandler(function(error) {
+          console.error('Failed to load stores:', error);
+          storeSelect.innerHTML = '<option value="">Failed to load stores</option>';
+          messageDiv.textContent = 'Failed to load stores: ' + error.message;
+          messageDiv.className = 'error';
+        })
+        .getStoresList();
+    }
+
+    // Handle store selection to populate branches
+    storeSelect.addEventListener('change', function() {
+      const selectedStore = storeSelect.value;
+      branchSelect.innerHTML = '';
+      
+      if (selectedStore && storesData.storeMap[selectedStore]) {
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Select branch';
+        branchSelect.appendChild(defaultOption);
+        
+        storesData.storeMap[selectedStore].forEach(function(branch) {
+          const option = document.createElement('option');
+          option.value = branch;
+          option.textContent = branch;
+          branchSelect.appendChild(option);
+        });
+      } else {
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Select store first';
+        branchSelect.appendChild(defaultOption);
+      }
+    });
+
+    // Load names and stores when page loads
+    window.addEventListener('load', function() {
+      loadNames();
+      loadStores();
+    });
 
     // Function to get geolocation
     function getLocation() {

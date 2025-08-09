@@ -13,10 +13,13 @@ This project is a web application that automatically records employee attendance
 #### Google Sheets Setup
 1. Create a new Google Sheets spreadsheet
 2. Get the spreadsheet ID from the URL (`https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/edit`)
-3. Create two sheets:
+3. Create three sheets:
    - **Attendance Records Sheet**: For storing attendance data (e.g., "Attendance Records")
    - **Members Sheet**: For managing user names (e.g., "Members")
-4. In the Members sheet, add a header in A1 (e.g., "Name") and employee names in column A starting from A2 (one name per row)
+   - **Stores Sheet**: For managing store and branch information (e.g., "Stores")
+4. Configure each sheet:
+   - **Members sheet**: Add a header in A1 (e.g., "Name") and employee names in column A starting from A2 (one name per row)
+   - **Stores sheet**: Add headers in A1 ("Store") and B1 ("Branch"), then add store names in column A and corresponding branch names in column B starting from row 2
 
 #### Google Maps API Key
 1. Access [Google Cloud Console](https://console.cloud.google.com/)
@@ -44,6 +47,7 @@ This project is a web application that automatically records employee attendance
    - `SpreadSheet_ID`: Your Google Sheets ID
    - `Sheet_Name`: Your attendance records sheet name (e.g., "Attendance Records")
    - `Members_Sheet_Name`: Your members sheet name (e.g., "Members") - Optional, defaults to "Members"
+   - `Stores_Sheet_Name`: Your stores sheet name (e.g., "Stores") - Optional, defaults to "Stores"
    - `Maps_API_KEY`: Your Google Maps API key
 
 ### 5. Initial Deployment
@@ -81,14 +85,21 @@ This project is a web application that automatically records employee attendance
 1. Access the web app URL
 2. Select your name from the dropdown (names are loaded from the Members sheet)
 3. Select "IN" for clock-in or "OUT" for clock-out
-4. Click "Register" button
-5. Location capture and registration will be processed automatically
+4. Select store and branch from the dropdowns (data is loaded from the Stores sheet)
+5. Click "Register" button
+6. Location capture and registration will be processed automatically
 
 **Managing Members:**
 - Add new employee names to column A of the Members sheet (starting from A2, A1 is for header)
 - Names will automatically appear in the dropdown when the page loads
 - Duplicate names are automatically removed
 - Names appear in the dropdown in the same order as written in the sheet
+
+**Managing Stores:**
+- Add store names to column A and branch names to column B of the Stores sheet (starting from row 2, row 1 is for headers)
+- Stores and branches will automatically appear in the dropdowns when the page loads
+- Selecting a store will populate the branch dropdown with branches for that store
+- Store and branch information will be recorded in the attendance data
 
 ## Troubleshooting
 
@@ -97,4 +108,7 @@ This project is a web application that automatically records employee attendance
 - **Cannot write to spreadsheet**: Check SpreadSheet_ID and Sheet_Name configuration
 - **Names not loading**: Verify Members_Sheet_Name exists and contains names in column A
 - **"Members sheet not found" error**: Create a sheet named "Members" or set Members_Sheet_Name property
+- **Stores not loading**: Verify Stores_Sheet_Name exists and contains store/branch data in columns A and B
+- **"Stores sheet not found" error**: Create a sheet named "Stores" or set Stores_Sheet_Name property
+- **Branch dropdown empty**: Ensure the selected store has corresponding branches in the Stores sheet
 - **Access permission error**: Review deployment access settings
