@@ -79,33 +79,33 @@ function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
 
-// 名前リストを取得する関数
-function getNamesList() {
+// メンバーリストを取得する関数
+function getMembersList() {
   const spreadSheetId = PropertiesService.getScriptProperties().getProperty('SpreadSheet_ID');
   if (!spreadSheetId) {
     throw new Error("Spreadsheet ID is not set in Script Properties.");
   }
 
-  const namesSheetName = PropertiesService.getScriptProperties().getProperty('Names_Sheet_Name') || 'Names';
+  const membersSheetName = PropertiesService.getScriptProperties().getProperty('Members_Sheet_Name') || 'Members';
 
   const ss = SpreadsheetApp.openById(spreadSheetId);
-  const namesSheet = ss.getSheetByName(namesSheetName);
+  const membersSheet = ss.getSheetByName(membersSheetName);
 
-  if (!namesSheet) {
-    throw new Error(`Names sheet "${namesSheetName}" not found. Please create a sheet named "${namesSheetName}" with names in column A.`);
+  if (!membersSheet) {
+    throw new Error(`Members sheet "${membersSheetName}" not found. Please create a sheet named "${membersSheetName}" with names in column A.`);
   }
 
   // 名前が入っている列（A列）からデータを取得
-  const range = namesSheet.getRange('A:A');
+  const range = membersSheet.getRange('A:A');
   const values = range.getValues();
 
   // 空白セルを除外し、重複を削除してソート
-  const names = values
+  const members = values
     .map(row => row[0])
     .filter(name => name && name.toString().trim() !== '')
     .map(name => name.toString().trim())
     .filter((name, index, arr) => arr.indexOf(name) === index) // 重複削除
     .sort();
 
-  return names;
+  return members;
 }
