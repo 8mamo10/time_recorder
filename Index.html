@@ -44,7 +44,7 @@
       color: #555;
     }
 
-    input[type="text"] {
+    input[type="text"], select {
       width: calc(100% - 20px);
       padding: 10px;
       margin-bottom: 15px;
@@ -52,6 +52,10 @@
       border-radius: 4px;
       font-size: 1em;
       box-sizing: border-box;
+    }
+
+    select {
+      width: 100%;
     }
 
     .radio-group {
@@ -112,7 +116,9 @@
     <h1>Attendance Registration</h1>
     <form id="attendanceForm">
       <label for="name">Your Name:</label>
-      <input type="text" id="name" name="name" required placeholder="Enter your name"><br>
+      <select id="name" name="name" required>
+        <option value="">Loading names...</option>
+      </select><br>
 
       <div class="radio-group">
         <label>Status:</label>
@@ -136,6 +142,36 @@
     const latitudeInput = document.getElementById('latitude');
     const longitudeInput = document.getElementById('longitude');
     const submitButton = document.getElementById('submitButton');
+    const nameSelect = document.getElementById('name');
+
+    // Function to load names from server
+    function loadNames() {
+      google.script.run
+        .withSuccessHandler(function(names) {
+          nameSelect.innerHTML = '';
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Select your name';
+          nameSelect.appendChild(defaultOption);
+          
+          names.forEach(function(name) {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            nameSelect.appendChild(option);
+          });
+        })
+        .withFailureHandler(function(error) {
+          console.error('Failed to load names:', error);
+          nameSelect.innerHTML = '<option value="">Failed to load names</option>';
+          messageDiv.textContent = 'Failed to load names: ' + error.message;
+          messageDiv.className = 'error';
+        })
+        .getNamesList();
+    }
+
+    // Load names when page loads
+    window.addEventListener('load', loadNames);
 
     // Function to get geolocation
     function getLocation() {

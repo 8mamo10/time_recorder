@@ -13,7 +13,10 @@ This project is a web application that automatically records employee attendance
 #### Google Sheets Setup
 1. Create a new Google Sheets spreadsheet
 2. Get the spreadsheet ID from the URL (`https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/edit`)
-3. Note the sheet name (e.g., "Attendance Records")
+3. Create two sheets:
+   - **Attendance Records Sheet**: For storing attendance data (e.g., "Attendance Records")
+   - **Names Sheet**: For managing user names (e.g., "Names")
+4. In the Names sheet, add employee names in column A (one name per row)
 
 #### Google Maps API Key
 1. Access [Google Cloud Console](https://console.cloud.google.com/)
@@ -39,7 +42,8 @@ This project is a web application that automatically records employee attendance
 1. In Apps Script editor, go to "Project Settings" → "Script properties"
 2. Add the following properties:
    - `SpreadSheet_ID`: Your Google Sheets ID
-   - `Sheet_Name`: Your sheet name
+   - `Sheet_Name`: Your attendance records sheet name (e.g., "Attendance Records")
+   - `Names_Sheet_Name`: Your names sheet name (e.g., "Names") - Optional, defaults to "Names"
    - `Maps_API_KEY`: Your Google Maps API key
 
 ### 5. Initial Deployment
@@ -75,14 +79,22 @@ This project is a web application that automatically records employee attendance
 ## Usage
 
 1. Access the web app URL
-2. Enter your name
+2. Select your name from the dropdown (names are loaded from the Names sheet)
 3. Select "IN" for clock-in or "OUT" for clock-out
 4. Click "Register" button
 5. Location capture and registration will be processed automatically
+
+**Managing Names:**
+- Add new employee names to column A of the Names sheet
+- Names will automatically appear in the dropdown when the page loads
+- Duplicate names are automatically removed
+- Names are sorted alphabetically in the dropdown
 
 ## Troubleshooting
 
 - **Location not captured**: Check browser location permission settings
 - **Address not retrieved**: Verify Google Maps API key and Geocoding API activation
 - **Cannot write to spreadsheet**: Check SpreadSheet_ID and Sheet_Name configuration
+- **Names not loading**: Verify Names_Sheet_Name exists and contains names in column A
+- **"Names sheet not found" error**: Create a sheet named "Names" or set Names_Sheet_Name property
 - **Access permission error**: Review deployment access settings

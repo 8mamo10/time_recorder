@@ -66,7 +66,7 @@ function getAddressFromCoordinates(lat, lng) {
 }
 
 // ウェブアプリケーションとしてデプロイするための関数 (初回のみ実行)
-function doGet(e) {
+function doGet() {
   // この関数はGETリクエストがあった場合に実行されます
   // 通常はここでHTMLファイルを提供します
   return HtmlService.createTemplateFromFile('Index')
@@ -77,4 +77,35 @@ function doGet(e) {
 // HTMLファイルの内容を返す関数
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+// 名前リストを取得する関数
+function getNamesList() {
+  const spreadSheetId = PropertiesService.getScriptProperties().getProperty('SpreadSheet_ID');
+  if (!spreadSheetId) {
+    throw new Error("Spreadsheet ID is not set in Script Properties.");
+  }
+
+  const namesSheetName = PropertiesService.getScriptProperties().getProperty('Names_Sheet_Name') || 'Names';
+
+  const ss = SpreadsheetApp.openById(spreadSheetId);
+  const namesSheet = ss.getSheetByName(namesSheetName);
+
+  if (!namesSheet) {
+    throw new Error(`Names sheet "${namesSheetName}" not found. Please create a sheet named "${namesSheetName}" with names in column A.`);
+  }
+
+  // 名前が入っている列（A列）からデータを取得
+  const range = namesSheet.getRange('A:A');
+  const values = range.getValues();
+
+  // 空白セルを除外し、重複を削除してソート
+  const names = values
+    .map(row => row[0])
+    .filter(name => name && name.toString().trim() !== '')
+    .map(name => name.toString().trim())
+    .filter((name, index, arr) => arr.indexOf(name) === index) // 重複削除
+    .sort();
+
+  return names;
 }
