@@ -66,11 +66,18 @@
       margin-right: 5px;
     }
 
-    .radio-group label {
+    .radio-group .radio-label {
       display: inline-block;
       margin-right: 15px;
       font-weight: normal;
       /* Override bold for radio labels */
+    }
+
+    .status-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
     }
 
     button {
@@ -117,25 +124,25 @@
     <form id="attendanceForm">
       <label for="name">Your Name:</label>
       <select id="name" name="name" required>
-        <option value="">Loading names...</option>
+        <option value="">👤 Loading names...</option>
       </select><br>
 
+      <label class="status-label">Status:</label>
       <div class="radio-group">
-        <label>Status:</label>
         <input type="radio" id="in" name="inOut" value="IN" required>
-        <label for="in">IN</label>
+        <label for="in" class="radio-label">IN</label>
         <input type="radio" id="out" name="inOut" value="OUT">
-        <label for="out">OUT</label>
+        <label for="out" class="radio-label">OUT</label>
       </div>
 
       <label for="store">Store:</label>
       <select id="store" name="store" required>
-        <option value="">Loading stores...</option>
+        <option value="">🏪 Loading stores...</option>
       </select><br>
 
       <label for="branch">Branch:</label>
       <select id="branch" name="branch" required>
-        <option value="">Select store first</option>
+        <option value="">🏢 Select store first</option>
       </select><br>
 
       <input type="hidden" id="latitude" name="latitude">
@@ -164,7 +171,7 @@
           nameSelect.innerHTML = '';
           const defaultOption = document.createElement('option');
           defaultOption.value = '';
-          defaultOption.textContent = 'Select your name';
+          defaultOption.textContent = '👤 Select your name';
           nameSelect.appendChild(defaultOption);
           
           names.forEach(function(name) {
@@ -176,7 +183,7 @@
         })
         .withFailureHandler(function(error) {
           console.error('Failed to load names:', error);
-          nameSelect.innerHTML = '<option value="">Failed to load names</option>';
+          nameSelect.innerHTML = '<option value="">❌ Failed to load names</option>';
           messageDiv.textContent = 'Failed to load names: ' + error.message;
           messageDiv.className = 'error';
         })
@@ -191,7 +198,7 @@
           storeSelect.innerHTML = '';
           const defaultOption = document.createElement('option');
           defaultOption.value = '';
-          defaultOption.textContent = 'Select store';
+          defaultOption.textContent = '🏪 Select store';
           storeSelect.appendChild(defaultOption);
           
           data.stores.forEach(function(store) {
@@ -203,7 +210,7 @@
         })
         .withFailureHandler(function(error) {
           console.error('Failed to load stores:', error);
-          storeSelect.innerHTML = '<option value="">Failed to load stores</option>';
+          storeSelect.innerHTML = '<option value="">❌ Failed to load stores</option>';
           messageDiv.textContent = 'Failed to load stores: ' + error.message;
           messageDiv.className = 'error';
         })
@@ -218,7 +225,7 @@
       if (selectedStore && storesData.storeMap[selectedStore]) {
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
-        defaultOption.textContent = 'Select branch';
+        defaultOption.textContent = '🏢 Select branch';
         branchSelect.appendChild(defaultOption);
         
         storesData.storeMap[selectedStore].forEach(function(branch) {
@@ -230,7 +237,7 @@
       } else {
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
-        defaultOption.textContent = 'Select store first';
+        defaultOption.textContent = '🏢 Select store first';
         branchSelect.appendChild(defaultOption);
       }
     });
